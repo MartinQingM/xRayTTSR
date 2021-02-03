@@ -76,7 +76,8 @@ class TrainSet(Dataset):
 
     def __getitem__(self, idx):
         ### HR
-        HR = imread(self.input_list[idx])
+        # HR = imread(self.input_list[idx])
+        HR = np.array(Image.open(self.input_list[idx]).convert('RGB'))
         h,w = HR.shape[:2]
         #HR = HR[:h//4*4, :w//4*4, :]
 
@@ -85,7 +86,8 @@ class TrainSet(Dataset):
         LR_sr = np.array(Image.fromarray(LR).resize((w, h), Image.BICUBIC))
 
         ### Ref and Ref_sr
-        Ref_sub = imread(self.ref_list[idx])
+        #Ref_sub = imread(self.ref_list[idx])
+        Ref_sub = np.array(Image.open(self.ref_list[idx]).convert('RGB'))
         h2, w2 = Ref_sub.shape[:2]
         Ref_sr_sub = np.array(Image.fromarray(Ref_sub).resize((w2//4, h2//4), Image.BICUBIC))
         Ref_sr_sub = np.array(Image.fromarray(Ref_sr_sub).resize((w2, h2), Image.BICUBIC))
@@ -93,8 +95,8 @@ class TrainSet(Dataset):
         ### complete ref and ref_sr to the same size, to use batch_size > 1
         Ref = np.zeros((160, 160, 3))
         Ref_sr = np.zeros((160, 160, 3))
-        Ref[:h2, :w2, :] = Ref_sub
-        Ref_sr[:h2, :w2, :] = Ref_sr_sub
+        Ref[:h2, :w2] = Ref_sub
+        Ref_sr[:h2, :w2] = Ref_sr_sub
 
         ### change type
         LR = LR.astype(np.float32)
@@ -133,7 +135,8 @@ class TestSet(Dataset):
 
     def __getitem__(self, idx):
         ### HR
-        HR = imread(self.input_list[idx])
+        # HR = imread(self.input_list[idx])
+        HR = np.array(Image.open(self.input_list[idx]).convert('RGB'))
         h, w = HR.shape[:2]
         h, w = h//4*4, w//4*4
         HR = HR[:h, :w, :] ### crop to the multiple of 4
@@ -143,7 +146,8 @@ class TestSet(Dataset):
         LR_sr = np.array(Image.fromarray(LR).resize((w, h), Image.BICUBIC))
 
         ### Ref and Ref_sr
-        Ref = imread(self.ref_list[idx])
+        # Ref = imread(self.ref_list[idx])
+        Ref = np.array(Image.open(self.ref_list[idx]).convert('RGB'))
         h2, w2 = Ref.shape[:2]
         h2, w2 = h2//4*4, w2//4*4
         Ref = Ref[:h2, :w2, :]
